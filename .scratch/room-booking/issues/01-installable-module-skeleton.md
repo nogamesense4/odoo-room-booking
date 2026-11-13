@@ -4,9 +4,9 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `docker compose up` on a fresh clone installs the module into the `booking` database
-- [ ] Groups exist: Booking User (implied for every internal user) and Booking Manager (implies User; admin assigned)
-- [ ] The documented test command runs and exits cleanly
-- [ ] PLAN.md "to confirm" items answered and README updated
+- [x] `docker compose up` on a fresh clone installs the module into the `booking` database
+- [x] Groups exist: Booking User (implied for every internal user) and Booking Manager (implies User; admin assigned)
+- [x] The documented test command runs and exits cleanly
+- [x] PLAN.md "to confirm" items answered and README updated

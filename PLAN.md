@@ -55,7 +55,7 @@
 
 ## To confirm during setup (Tue 10)
 
-- [ ] Does Odoo 18 load demo data by default from the CLI? If not, add the enabling flag to docker-compose
-- [ ] Is `freezegun` available in the `odoo:18.0` image? If not, use relative dates in tests
-- [ ] The exact test command works; update the README
-- [ ] Start Docker Desktop (the daemon wasn't running on 9 Nov)
+- [x] Odoo 18 loads demo data by default (`--without-demo` defaults to none); no flag needed
+- [x] `freezegun` 1.2.1 is available in the `odoo:18.0` image
+- [x] The test command works (README updated)
+- [x] Docker Desktop running

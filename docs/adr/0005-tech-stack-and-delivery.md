@@ -43,7 +43,5 @@ Reviewers will clone a public GitHub repo and should be able to run the module i
 
 ## Consequences
 
-- Facts to confirm during setup on Tue 10 Nov:
-  - Does Odoo 18 load demo data by default from the CLI? If not, add the flag that enables it.
-  - Is `freezegun` available in the `odoo:18.0` image?
+- Confirmed during setup (13 Nov): Odoo 18 loads demo data by default, so no extra flag is needed; `freezegun` 1.2.1 ships in the `odoo:18.0` image, so time-dependent tests can freeze time.
 - `btree_gist` is part of the standard contrib extensions in the `postgres:16` image.

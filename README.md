@@ -15,10 +15,10 @@ Requires Docker. Runs Odoo 18.0 Community and PostgreSQL 16.
 ### Running the tests
 
 ```bash
-docker compose run --rm odoo odoo -d booking --test-tags /room_booking --stop-after-init
+docker compose run --rm odoo odoo -d booking -u room_booking --test-tags /room_booking --stop-after-init
 ```
 
-_Exact command to be confirmed during setup._
+Look for `0 failed, 0 error(s)` at the end of the output.
 
 ## Users and roles
 
