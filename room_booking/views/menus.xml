@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_room_booking_root"
+              name="Room Booking"
+              groups="group_booking_user"
+              sequence="40"/>
+
+    <menuitem id="menu_room_booking_config"
+              name="Configuration"
+              parent="menu_room_booking_root"
+              groups="group_booking_manager"
+              sequence="100"/>
+
+    <menuitem id="menu_booking_resource"
+              name="Resources"
+              parent="menu_room_booking_config"
+              action="booking_resource_action"
+              sequence="10"/>
+
+    <menuitem id="menu_booking_working_hours"
+              name="Working Hours"
+              parent="menu_room_booking_config"
+              action="resource.action_resource_calendar_form"
+              sequence="20"/>
+</odoo>

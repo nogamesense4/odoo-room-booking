@@ -4,9 +4,9 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Manager can create/edit/archive a resource; User can only read
-- [ ] Capacity shown only for rooms
-- [ ] Demo calendar and resources load
-- [ ] Access test: User cannot write to resources
+- [x] Manager can create/edit/archive a resource; User can only read
+- [x] Capacity shown only for rooms
+- [x] Demo calendar and resources load
+- [x] Access test: User cannot write to resources

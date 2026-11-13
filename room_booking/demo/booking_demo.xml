@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Demo working hours: Mon-Fri 9-12 and 13-18 with a lunch break (ADR-0001). -->
+    <record id="calendar_office_hours" model="resource.calendar">
+        <field name="name">Office hours</field>
+        <field name="tz">Asia/Singapore</field>
+        <field name="attendance_ids" eval="[(5, 0, 0),
+                (0, 0, {'name': 'Monday Morning', 'dayofweek': '0', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Monday Afternoon', 'dayofweek': '0', 'hour_from': 13, 'hour_to': 18, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Tuesday Morning', 'dayofweek': '1', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Tuesday Afternoon', 'dayofweek': '1', 'hour_from': 13, 'hour_to': 18, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Wednesday Morning', 'dayofweek': '2', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Wednesday Afternoon', 'dayofweek': '2', 'hour_from': 13, 'hour_to': 18, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Thursday Morning', 'dayofweek': '3', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Thursday Afternoon', 'dayofweek': '3', 'hour_from': 13, 'hour_to': 18, 'day_period': 'afternoon'}),
+                (0, 0, {'name': 'Friday Morning', 'dayofweek': '4', 'hour_from': 9, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Friday Afternoon', 'dayofweek': '4', 'hour_from': 13, 'hour_to': 18, 'day_period': 'afternoon'})]"/>
+    </record>
+
+    <!-- A calendar-wide closure one week from today: bookings can't land on it. -->
+    <record id="leave_company_day" model="resource.calendar.leaves">
+        <field name="name">Company Day (demo holiday)</field>
+        <field name="calendar_id" ref="calendar_office_hours"/>
+        <field name="date_from" eval="(DateTime.today() + relativedelta(days=7)).strftime('%Y-%m-%d 00:00:00')"/>
+        <field name="date_to" eval="(DateTime.today() + relativedelta(days=7)).strftime('%Y-%m-%d 23:59:59')"/>
+    </record>
+
+    <record id="resource_boardroom" model="booking.resource">
+        <field name="name">Boardroom</field>
+        <field name="resource_type">room</field>
+        <field name="capacity">12</field>
+        <field name="calendar_id" ref="calendar_office_hours"/>
+        <field name="requires_approval" eval="True"/>
+        <field name="description">Level 5. Video conferencing. Needs a Manager's approval.</field>
+    </record>
+
+    <record id="resource_meeting_room_a" model="booking.resource">
+        <field name="name">Meeting Room A</field>
+        <field name="resource_type">room</field>
+        <field name="capacity">6</field>
+        <field name="calendar_id" ref="calendar_office_hours"/>
+    </record>
+
+    <record id="resource_focus_room" model="booking.resource">
+        <field name="name">Focus Room</field>
+        <field name="resource_type">room</field>
+        <field name="capacity">2</field>
+        <field name="calendar_id" ref="calendar_office_hours"/>
+    </record>
+
+    <record id="resource_projector_1" model="booking.resource">
+        <field name="name">Projector 1</field>
+        <field name="resource_type">equipment</field>
+        <field name="calendar_id" ref="calendar_office_hours"/>
+    </record>
+
+    <record id="resource_camera" model="booking.resource">
+        <field name="name">Camera</field>
+        <field name="resource_type">equipment</field>
+        <field name="calendar_id" ref="calendar_office_hours"/>
+        <field name="requires_approval" eval="True"/>
+        <field name="description">Mirrorless camera kit. Needs a Manager's approval.</field>
+    </record>
+</odoo>

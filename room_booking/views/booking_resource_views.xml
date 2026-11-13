@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="booking_resource_view_list" model="ir.ui.view">
+        <field name="name">booking.resource.list</field>
+        <field name="model">booking.resource</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="resource_type"/>
+                <field name="capacity" invisible="resource_type != 'room'"/>
+                <field name="calendar_id"/>
+                <field name="requires_approval"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="booking_resource_view_form" model="ir.ui.view">
+        <field name="name">booking.resource.form</field>
+        <field name="model">booking.resource</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Boardroom"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="resource_type"/>
+                            <field name="capacity" invisible="resource_type != 'room'"/>
+                        </group>
+                        <group>
+                            <field name="calendar_id"/>
+                            <field name="requires_approval"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Location, equipment, notes..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="booking_resource_view_search" model="ir.ui.view">
+        <field name="name">booking.resource.search</field>
+        <field name="model">booking.resource</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="rooms" string="Rooms" domain="[('resource_type', '=', 'room')]"/>
+                <filter name="equipment" string="Equipment" domain="[('resource_type', '=', 'equipment')]"/>
+                <separator/>
+                <filter name="needs_approval" string="Requires Approval" domain="[('requires_approval', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_type" string="Type" context="{'group_by': 'resource_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="booking_resource_action" model="ir.actions.act_window">
+        <field name="name">Resources</field>
+        <field name="res_model">booking.resource</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a room or piece of equipment</p>
+            <p>Each physical item is its own resource, with its own working hours.</p>
+        </field>
+    </record>
+</odoo>

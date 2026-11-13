@@ -4,9 +4,15 @@
     "version": "18.0.1.0.0",
     "category": "Productivity",
     "license": "LGPL-3",
-    "depends": ["base"],
+    "depends": ["base", "resource"],
     "data": [
         "security/room_booking_groups.xml",
+        "security/ir.model.access.csv",
+        "views/booking_resource_views.xml",
+        "views/menus.xml",
+    ],
+    "demo": [
+        "demo/booking_demo.xml",
     ],
     "application": True,
     "installable": True,
