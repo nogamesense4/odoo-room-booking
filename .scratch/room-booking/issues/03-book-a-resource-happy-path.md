@@ -4,10 +4,10 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] User creates a booking → Confirmed; it shows in the Upcoming list
-- [ ] End must be after start; start in the past is rejected (create and move)
-- [ ] User cannot edit someone else's booking, cannot delete, cannot set "booked for" to another user
-- [ ] Manager can book for another user
-- [ ] Tests cover all of the above with `with_user()`
+- [x] User creates a booking → Confirmed; it shows in the Upcoming list
+- [x] End must be after start; start in the past is rejected (create and move)
+- [x] User cannot edit someone else's booking, cannot delete, cannot set "booked for" to another user
+- [x] Manager can book for another user
+- [x] Tests cover all of the above with `with_user()`

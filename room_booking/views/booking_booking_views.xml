@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="booking_booking_view_list" model="ir.ui.view">
+        <field name="name">booking.booking.list</field>
+        <field name="model">booking.booking</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="resource_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="start_datetime"/>
+                <field name="end_datetime"/>
+                <field name="duration" widget="float_time" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'requested'"
+                       decoration-success="state == 'confirmed'"
+                       decoration-muted="state in ('rejected', 'cancelled')"
+                       decoration-info="state == 'completed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="booking_booking_view_form" model="ir.ui.view">
+        <field name="name">booking.booking.form</field>
+        <field name="model">booking.booking</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="requested,confirmed,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Sprint planning"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="resource_id" options="{'no_create': True}"/>
+                            <!-- Editable for Managers only; the real check is in Python (ADR-0004). -->
+                            <field name="is_booking_manager" invisible="1"/>
+                            <field name="user_id" widget="many2one_avatar_user"
+                                   readonly="not is_booking_manager"/>
+                        </group>
+                        <group>
+                            <field name="start_datetime"/>
+                            <field name="end_datetime"/>
+                            <field name="duration" widget="float_time"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Agenda, attendees, notes..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="booking_booking_view_search" model="ir.ui.view">
+        <field name="name">booking.booking.search</field>
+        <field name="model">booking.booking</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="resource_id"/>
+                <field name="user_id"/>
+                <!-- "Upcoming" = active bookings ending today or later. -->
+                <filter name="upcoming" string="Upcoming"
+                        domain="[('end_datetime', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                                 ('state', 'in', ('requested', 'confirmed'))]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="booking_booking_action" model="ir.actions.act_window">
+        <field name="name">Bookings</field>
+        <field name="res_model">booking.booking</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_upcoming': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Book a room or piece of equipment</p>
+            <p>Pick a resource and a time slot inside its working hours.</p>
+        </field>
+    </record>
+</odoo>

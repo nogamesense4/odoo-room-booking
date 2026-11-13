@@ -5,6 +5,12 @@
               groups="group_booking_user"
               sequence="40"/>
 
+    <menuitem id="menu_booking_bookings"
+              name="Bookings"
+              parent="menu_room_booking_root"
+              action="booking_booking_action"
+              sequence="10"/>
+
     <menuitem id="menu_room_booking_config"
               name="Configuration"
               parent="menu_room_booking_root"

@@ -8,7 +8,9 @@
     "data": [
         "security/room_booking_groups.xml",
         "security/ir.model.access.csv",
+        "security/booking_rules.xml",
         "views/booking_resource_views.xml",
+        "views/booking_booking_views.xml",
         "views/menus.xml",
     ],
     "demo": [

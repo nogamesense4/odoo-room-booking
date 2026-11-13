@@ -29,7 +29,7 @@ The core problem is preventing overlapping bookings of the same resource. The br
      ) WHERE (state IN ('requested', 'confirmed'))
      ```
      `init()` runs `CREATE EXTENSION IF NOT EXISTS btree_gist`. `tsrange` (not `tstzrange`) is used because Odoo stores `Datetime` as `timestamp without time zone`. **The database is the source of truth; Python is there to explain the error.**
-6. **No bookings in the past.** Setting `start_datetime` to a time before now is rejected, on create or when a booking is moved, for every role. Editing other fields on past bookings stays allowed.
+6. **No bookings in the past.** Setting `start_datetime` to a time before now is rejected, on create or when a booking is moved, for every role. Editing other fields on past bookings stays allowed. The **system** (superuser: data loading and crons) is exempt, consistent with ADR-0006, so demo data can include past bookings; no user can reach the superuser environment from the UI.
 7. **Deferred to later sessions:** attendees, the Calendar link, and checking room capacity against attendees (Session 6).
 
 ## Alternatives considered
