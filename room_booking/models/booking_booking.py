@@ -1,3 +1,5 @@
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
@@ -114,6 +116,31 @@ class BookingBooking(models.Model):
                     end=clash._format_local(clash.end_datetime, "%H:%M"),
                     user=clash.user_id.display_name,
                     state=dict(clash._fields["state"].selection)[clash.state],
+                ))
+
+    @api.constrains("resource_id", "start_datetime", "end_datetime")
+    def _check_availability(self):
+        """[start, end) must sit inside ONE working interval of the resource's
+        calendar (ADR-0001). That single rule rejects outside hours, lunch
+        breaks, overnight, multi-day and calendar-wide leaves. No override,
+        not even for Managers. Only runs when time or resource change."""
+        for booking in self:
+            calendar = booking.resource_id.calendar_id
+            # Odoo stores naive UTC; the calendar API needs aware datetimes and
+            # converts to the calendar's own tz internally.
+            start = pytz.utc.localize(booking.start_datetime)
+            end = pytz.utc.localize(booking.end_datetime)
+            # Without resources the result is keyed by False; leaves
+            # (holidays) are already subtracted from these intervals.
+            intervals = calendar._work_intervals_batch(start, end)[False]
+            if not any(i_start <= start and end <= i_stop for i_start, i_stop, _rec in intervals):
+                raise ValidationError(_(
+                    "%(resource)s can only be booked within its working hours "
+                    "(%(calendar)s, %(tz)s). A booking must fit inside one continuous "
+                    "working period: not across a break, overnight or a holiday.",
+                    resource=booking.resource_id.display_name,
+                    calendar=calendar.display_name,
+                    tz=calendar.tz,
                 ))
 
     def _format_local(self, value, fmt):

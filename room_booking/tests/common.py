@@ -23,6 +23,19 @@ class BookingCase(TransactionCase):
             "name": "Maria Manager", "login": "test_manager",
             "groups_id": [(6, 0, [internal.id, manager.id])],
         })
+        # A fixed UTC calendar, open every day 08-12 and 13-17, so tests don't
+        # depend on today's weekday or the server's time zone. New resources
+        # default to the company calendar, so make this the company's.
+        cls.calendar = cls.env["resource.calendar"].create({
+            "name": "Test hours (UTC)",
+            "tz": "UTC",
+            "attendance_ids": [(5, 0, 0)] + [
+                (0, 0, {"name": f"{day} {frm}", "dayofweek": str(day),
+                        "hour_from": frm, "hour_to": to})
+                for day in range(7) for frm, to in ((8, 12), (13, 17))
+            ],
+        })
+        cls.env.company.resource_calendar_id = cls.calendar
         Resource = cls.env["booking.resource"]
         cls.room = Resource.create({"name": "Room A", "resource_type": "room"})
         cls.approval_room = Resource.create({

@@ -4,9 +4,9 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Booking exactly at window start/end allowed
-- [ ] Across lunch, overnight, multi-day, and on a holiday rejected
-- [ ] Manager is also blocked
-- [ ] Tests for each case above
+- [x] Booking exactly at window start/end allowed
+- [x] Across lunch, overnight, multi-day, and on a holiday rejected
+- [x] Manager is also blocked
+- [x] Tests for each case above

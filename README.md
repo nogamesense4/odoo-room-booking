@@ -103,6 +103,7 @@ Each booking records **who it is for** (`user_id`, defaulting to the creator) se
 - **No CI pipeline.** Tests run with one documented command. Adding CI is a possible next step.
 - **Rules 1 and 3 are covered; rule 2 (AI) is optional.** Chatter, follower notifications and two crons give users value right away. AI was deferred so the base features could be properly tested.
 - **The system acts as its own actor.** Crons skip the role and time checks but still go through the transition table.
+- **"Upcoming" is day-based.** The default filter shows active bookings ending today or later, because view domains compare against the date, not the current time. A booking that ended an hour ago still shows until midnight.
 - _More TBD._
 
 ## How I used AI
