@@ -27,8 +27,10 @@ The core problem is preventing overlapping bookings of the same resource. The br
        resource_id WITH =,
        tsrange(start_datetime, end_datetime, '[)') WITH &&
      ) WHERE (state IN ('requested', 'confirmed'))
+     DEFERRABLE INITIALLY DEFERRED
      ```
-     `init()` runs `CREATE EXTENSION IF NOT EXISTS btree_gist`. `tsrange` (not `tstzrange`) is used because Odoo stores `Datetime` as `timestamp without time zone`. **The database is the source of truth; Python is there to explain the error.**
+     `_auto_init()` runs `CREATE EXTENSION IF NOT EXISTS btree_gist` before calling `super()`. (Not `init()`: Odoo adds `_sql_constraints` inside `_auto_init`, which runs before `init()`, so the extension would arrive too late.)
+     **Deferred to commit** so that the Python check always runs first and gives the readable message, whatever order the ORM flushes in. The database still rejects the overlap when two transactions race, because the check happens at commit. `tsrange` (not `tstzrange`) is used because Odoo stores `Datetime` as `timestamp without time zone`. **The database is the source of truth; Python is there to explain the error.**
 6. **No bookings in the past.** Setting `start_datetime` to a time before now is rejected, on create or when a booking is moved, for every role. Editing other fields on past bookings stays allowed. The **system** (superuser: data loading and crons) is exempt, consistent with ADR-0006, so demo data can include past bookings; no user can reach the superuser environment from the UI.
 7. **Deferred to later sessions:** attendees, the Calendar link, and checking room capacity against attendees (Session 6).
 
@@ -40,6 +42,7 @@ The core problem is preventing overlapping bookings of the same resource. The br
 | "Flag" model: allow overlapping Requested bookings and let a Manager resolve them on confirm | Needs a conflict queue and a way to resolve it, and users see bookings that may never happen |
 | **B.** Python check + `SELECT … FOR UPDATE` on the resource row | Works without an extension, and Odoo retries on serialization failure. But it is only safe if every path that writes a booking takes the lock; the database constraint can't be bypassed |
 | **C.** Python check only | Leaves the race open. This is the fallback if `btree_gist` can't be installed |
+| Constraint checked immediately (not deferred) | Depending on when the ORM flushes, the raw database error could fire before the Python check, so users would see a generic message |
 | Constraint added by hand in `init()` | A violation would show a raw database error; `_sql_constraints` maps it to a readable message |
 
 ## Consequences

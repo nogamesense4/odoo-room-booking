@@ -4,10 +4,10 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Partial overlap, containment and exact duplicate rejected; back-to-back allowed
-- [ ] Same time on a different resource allowed; Cancelled/Rejected/Completed don't block
-- [ ] Moving a booking re-checks others but not itself
-- [ ] Error message names the conflicting booking
-- [ ] Raw-SQL test proves the database rejects an overlap that bypasses Python
+- [x] Partial overlap, containment and exact duplicate rejected; back-to-back allowed
+- [x] Same time on a different resource allowed; Cancelled/Rejected/Completed don't block
+- [x] Moving a booking re-checks others but not itself
+- [x] Error message names the conflicting booking
+- [x] Raw-SQL test proves the database rejects an overlap that bypasses Python

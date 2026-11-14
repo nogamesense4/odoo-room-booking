@@ -12,6 +12,23 @@ class BookingBooking(models.Model):
     _description = "Booking"
     _order = "start_datetime, id"
 
+    # Source of truth for "no overlapping active bookings on one resource"
+    # (ADR-0002). Half-open ranges, so back-to-back bookings don't collide.
+    # DEFERRED: checked at commit, so the Python check below runs first and
+    # gives the readable message; the database catches the race where two
+    # users save at the same moment and neither can see the other's row.
+    _sql_constraints = [
+        (
+            "no_overlap",
+            "EXCLUDE USING gist ("
+            " resource_id WITH =,"
+            " tsrange(start_datetime, end_datetime, '[)') WITH &&"
+            ") WHERE (state IN ('requested', 'confirmed'))"
+            " DEFERRABLE INITIALLY DEFERRED",
+            "This resource is already booked for an overlapping time.",
+        ),
+    ]
+
     name = fields.Char(string="Purpose", required=True)
     resource_id = fields.Many2one("booking.resource", required=True, index=True)
     user_id = fields.Many2one(
@@ -56,6 +73,13 @@ class BookingBooking(models.Model):
         for booking in self:
             booking.is_booking_manager = is_manager
 
+    def _auto_init(self):
+        # The exclusion constraint compares resource_id (a plain integer) with
+        # a GiST index, which needs btree_gist. It must exist before Odoo
+        # creates the constraint at the end of _auto_init.
+        self.env.cr.execute("CREATE EXTENSION IF NOT EXISTS btree_gist")
+        return super()._auto_init()
+
     # ------------------------------------------------------------------
     # Validation
     # ------------------------------------------------------------------
@@ -70,6 +94,31 @@ class BookingBooking(models.Model):
             # people may not (ADR-0002, ADR-0006).
             if not self.env.su and booking.start_datetime < now:
                 raise ValidationError(_("A booking cannot start in the past."))
+
+    @api.constrains("resource_id", "start_datetime", "end_datetime", "state")
+    def _check_no_overlap(self):
+        """Readable version of the exclusion constraint (ADR-0002)."""
+        for booking in self.filtered(lambda b: b.state in ACTIVE_STATES):
+            clash = self.search([
+                ("id", "!=", booking.id),
+                ("resource_id", "=", booking.resource_id.id),
+                ("state", "in", ACTIVE_STATES),
+                ("start_datetime", "<", booking.end_datetime),
+                ("end_datetime", ">", booking.start_datetime),
+            ], limit=1)
+            if clash:
+                raise ValidationError(_(
+                    "%(resource)s is already booked %(start)s–%(end)s by %(user)s (%(state)s).",
+                    resource=clash.resource_id.display_name,
+                    start=clash._format_local(clash.start_datetime, "%a %d %b %H:%M"),
+                    end=clash._format_local(clash.end_datetime, "%H:%M"),
+                    user=clash.user_id.display_name,
+                    state=dict(clash._fields["state"].selection)[clash.state],
+                ))
+
+    def _format_local(self, value, fmt):
+        """Show a UTC datetime in the current user's time zone."""
+        return fields.Datetime.context_timestamp(self, value).strftime(fmt)
 
     def _check_booked_for(self, vals):
         """Only Managers may book for, or hand a booking to, another user (ADR-0004)."""
